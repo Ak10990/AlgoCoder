@@ -190,6 +190,86 @@ new SuperUserBinder(BR.user, R.layout.item_super_user), new UserBinder(BR.user, 
 //code
 } }
 
+### Two-Way data binding
+android:text="@={viewModel.twoWayText}"
+
+Views with Two-Way Binding support
+• AbsListView -> android:selectedItemPosition
+• CalendarView -> android:date
+• CompoundButton -> android:checked
+• DatePicker -> android:year, android:month, android:day
+• NumberPicker -> android:value
+• RadioGroup -> android:checkedButton
+• RatingBar -> android:rating
+• SeekBar -> android:progres
+• TabHost -> android:currentTab
+• TextView -> android:text
+• TimePicker -> android:hour, android:minute
+
+### Custom views
+@InverseBindingAdapter(attribute = "color", event = "colorAttrChanged") public static int getColor(ColorPickerView view)
+{
+    return view.getColor();
+}
+
+@BindingAdapter("colorAttrChanged")
+public static void setColorListener(ColorPickerView view, final InverseBindingListener colorChange)
+{
+if (colorChange == null) {
+        view.setOnColorChangedListener(null);
+    }
+else
+{
+view.setOnColorChangedListener(new OnColorChangedListener() {
+@Override
+            public void onColorChanged(int newColor)
+            {
+                colorChange.onChange();
+            }
+}); }
+}
+
+@BindingAdapter("color")
+public static void setColor(ColorPickerView view, int color) {
+     if (color != view.getColor())//Avoiding cycles
+    {
+        view.setColor(color);
+    }
+}
+
+public class TwoWayViewModel extends BaseObservable
+{
+    private int color;
+    public void setColor(int color)
+    {
+        this.color = color;
+this.notifyPropertyChanged(BR.color); }
+@Bindable
+public int getColor() {
+        return this.color;
+    }
+}
+
+public class TwoWayBindingActivity extends AppCompatActivity {
+    private ActivityTwoWayBinding binding;
+@Override
+protected void onCreate(@Nullable Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+binding = DataBindingUtil.setContentView(this, R.layout.activity_two_way); binding.setViewModel(new TwoWayViewModel());
+} }
+
+<LinearLayout>
+<com.github.danielnilsson9.colorpickerview.view.ColorPickerView
+        bind:color="@={viewModel.color}"
+        />
+<EditText
+android:text="@={viewModel.color}" />
+<Button
+android:text="Set defined color"
+android:onClick="@{() -> viewModel.setColor(Color.parseColor(`#C97249`))}" />
+</LinearLayout>
+
+
 ### How it works?
  Bind ViewModel to View 
  Register for property change callbacks
