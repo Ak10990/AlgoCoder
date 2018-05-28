@@ -169,6 +169,27 @@ return new CompositeItemBinder<UserViewModel>(
 new SuperUserBinder(BR.user, R.layout.item_super_user), new UserBinder(BR.user, R.layout.item_user)
 ); }
 
+### Lambdas
+<Button
+    android:onClick="@{() -> viewModel.sendAction()}
+/>
+ public class MainViewModel extends BaseObservable
+{
+    public void sendAction()
+    {
+//code
+} }
+
+<Button
+    android:onClick="@{viewModel::sendAction}"
+/>
+ public class MainViewModel extends BaseObservable
+{
+    public void sendAction(View view)
+    {
+//code
+} }
+
 ### How it works?
  Bind ViewModel to View 
  Register for property change callbacks
